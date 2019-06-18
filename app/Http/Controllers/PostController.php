@@ -39,14 +39,19 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return mixed
      */
     public function show($id)
     {
         $post = Post::findOrFail($id);
+
+        // example condition. In this place must be difficult condition
+        $someCondition =  true;
+
+        if ($someCondition) {
+            // need to log
+        }
 
         return $post;
     }
