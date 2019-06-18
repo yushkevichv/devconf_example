@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\UsefulLog;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -51,6 +52,11 @@ class PostController extends Controller
 
         if ($someCondition) {
             // need to log
+            UsefulLog::create([
+                'modellable_type' => Post::class,
+                'modellable_id' => $id,
+                'extra_data' => 'some extra information'
+            ]);
         }
 
         return $post;
