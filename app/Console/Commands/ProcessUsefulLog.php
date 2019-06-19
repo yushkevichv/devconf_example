@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\UsefulLog;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessUsefulLog extends Command
@@ -42,21 +43,16 @@ class ProcessUsefulLog extends Command
 
         $filePath = storage_path('app/'.$fileName);
 
-        $file = fopen($filePath, "r");
-        $array = [];
+        $query = "LOAD DATA LOCAL INFILE '$filePath'
+            INTO TABLE useful_logs 
+            FIELDS TERMINATED BY ';' 
+            OPTIONALLY ENCLOSED BY '\"' 
+            ESCAPED BY '\"' 
+            LINES TERMINATED BY '\\n'
+            IGNORE 0 LINES (`modellable_type`, `modellable_id`, `extra_data`, `created_at`, `updated_at`);
+        ";
 
-        while (($data = fgetcsv($file, 200, ";")) !== false) {
-            array_push($array, [
-                'modellable_type' => $data[0],
-                'modellable_id' => $data[1],
-                'extra_data' => $data[2],
-                'created_at' => $data[3],
-                'updated_at' => $data[4],
-            ]);
-        }
-        fclose($file);
-
-        UsefulLog::insert($array);
+        DB::connection()->getPdo()->exec($query);
 
         Storage::delete($fileName);
     }
